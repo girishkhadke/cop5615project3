@@ -1,0 +1,48 @@
+1.  How to compile and execute?
+
+    a)  To compile, run script server.sh which will compile server.java and client.java both.
+    b)  First run server.sh to compile all files and run server. (Note down the port number printed on console)
+    c)  Modify config.ini for server-hostname,port number printed on console.
+    d)  Now, run client.sh script to run the client. (By default client.sh script will run client as follows:
+            java Client "hello"
+
+	(Note that in project2, priority is given to get/put/delete operations. This priority is taken from user at the command prompt as a parameter itself)
+
+    e)  After both client and server are started, client will print a message on console and wait for user input:
+            Next Operation: <hello | directory list | file put | file get | file aput | file aget | delete | terminate> :
+    f)  User can then type any commands from above operations with required parameters and press enter to fire that command on server.
+    g)  In order to terminate connection gracefully, type in "terminate" command which will shut down only client. (To shut down server, first terminate all clients and to shut down
+	 server press ctrl+c)
+
+	In case of using multiple clients at the same time, I have introduced another log file (<ServerName>_Process.log) at server side which logs current timestamped operation and its state
+	(running, waiting and done). Using this log, we can easily identify which process was scheduled/ started running at which time, which process started waiting at which time and which was
+	done at which time.
+
+	Sample output in <ServerName>_Process.log file is as follows:
+
+	Time: <TimeStamp> ---> <Reader | Writer | Delete> with priority <priority> <running | waiting | done>
+
+	Using this process log, we can easily determine which process was scheduled at which time and on what basis.
+
+2.  What you learned from this project?
+
+    I have learnt Client-Server based multithreaded socket programming in this assignment.
+
+3.  Challenges faced?
+
+    Challenge 1:
+        The assignment involves challenges regarding File Handling. For example. What happens if there is same copy of file on server?
+    What happens when transfer is terminated before successfully completing? (In this case, we create a backup of original file with
+    *.bak extension and In case of error or abort, we delete the partially created files and rename *.bak to its original name.
+    The implementation takes care of deleting and renaming files in above cases.
+
+    Challenge 2:
+        Challenge was to handle multiple clients at the same time using multithreading and using priority queue to order the incoming requests according to priority and in case of tie
+	 handle request according to timestamp.The implementation takes care of doing synchronization and ordering of requests using a per file queue. So in case of conficting requests
+	on same file, one of the conflicting requests is pushed in queue and is blocked till first process completes and awakens process in queue.
+
+4.	How to test or check log:
+
+	After all testing is done, check <ServerName>.log file to check for all protocol messages forwarded / received by server.
+				   check <Servername>_process.log file to check how reader/writer/delete processes were handled(in which order) by server.
+				   For client side, you can also check <clientName>.log file.
